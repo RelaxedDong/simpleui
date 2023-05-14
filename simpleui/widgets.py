@@ -9,12 +9,27 @@
 """
 import typing
 import copy
+import datetime
+import re
+import warnings
+from collections import defaultdict
+from itertools import chain
 
+from django.conf import settings
 from django.forms.renderers import get_default_renderer
+from django.forms.utils import to_current_timezone
 from django.forms.widgets import media_property
-from django.utils import formats
+from django.templatetags.static import static
+from django.utils import datetime_safe, formats
+from django.utils.datastructures import OrderedSet
+from django.utils.dates import MONTHS
+from django.utils.formats import get_format
+from django.utils.html import format_html, html_safe
 from django.utils.safestring import mark_safe
-
+from django.utils.topological_sort import (
+    CyclicDependencyError, stable_topological_sort,
+)
+from django.utils.translation import gettext_lazy as _
 
 __all__ = ('STextInput', 'SPasswordInput',
            'SURLInput', 'SEmailInput', 'SNumberInput',)
@@ -121,7 +136,7 @@ class CWidget(metaclass=MediaDefiningClass):
         :return:
         """
         if not attrs:
-            self.bind_attr = {}
+            self.bind_attr={}
             return
         for key, value in attrs.items():
             if key[0] == ":":
@@ -132,7 +147,6 @@ class CWidget(metaclass=MediaDefiningClass):
                         self.bind_attr[a] = b
                 else:
                     continue
-
 
 class CInput(CWidget):
     """
@@ -161,7 +175,7 @@ class STextInput(CInput):
 
     def __init__(self, attrs: typing.Union[typing.Dict[str, str], None] = None):
         self.get_bind_attr(attrs)
-        if not attrs:
+        if not  attrs :
             attrs = {}
             attrs['style'] = "width:180px"
         else:
@@ -173,7 +187,6 @@ class STextInput(CInput):
 class SNumberInput(CInput):
     input_type = 'number'
     template_name = 'forms/widgets/number.html'
-
     def __init__(self, attrs: typing.Union[typing.Dict[str, str], None] = None):
         self.get_bind_attr(attrs)
         if not attrs:
@@ -188,7 +201,6 @@ class SNumberInput(CInput):
 class SEmailInput(CInput):
     input_type = 'email'
     template_name = 'forms/widgets/email.html'
-
     def __init__(self, attrs: typing.Union[typing.Dict[str, str], None] = None):
         self.get_bind_attr(attrs)
         if not attrs:
@@ -199,11 +211,9 @@ class SEmailInput(CInput):
                 attrs['style'] = "width:180px "
         super().__init__(attrs)
 
-
 class SURLInput(CInput):
     input_type = 'url'
     template_name = 'forms/widgets/url.html'
-
     def __init__(self, attrs: typing.Union[typing.Dict[str, str], None] = None):
         self.get_bind_attr(attrs)
         if not attrs:
@@ -214,12 +224,11 @@ class SURLInput(CInput):
                 attrs['style'] = "width:180px "
         super().__init__(attrs)
 
-
 class SPasswordInput(CInput):
     input_type = 'password'
     template_name = 'forms/widgets/password.html'
 
-    def __init__(self, attrs: typing.Union[typing.Dict[str, str], None] = None, render_value=False):
+    def __init__(self, attrs: typing.Union[typing.Dict[str, str], None] = None,render_value=False):
         self.get_bind_attr(attrs)
         if not attrs:
             attrs = {}
@@ -229,17 +238,13 @@ class SPasswordInput(CInput):
                 attrs['style'] = "width:180px "
         super().__init__(attrs)
         self.render_value = render_value
-
     def get_context(self, name, value, attrs):
         if not self.render_value:
             value = None
         return super().get_context(name, value, attrs)
-
-
 # Defined at module level so that CheckboxInput is picklable (#17976)
 def boolean_check(v):
     return not (v is False or v is None or v == '')
-
 
 class SCheckboxInput(CInput):
     """
