@@ -8,6 +8,3 @@ gitee:
 
 https://gitee.com/tompeppa/simpleui
 
-
-QQ群：
-786576510

@@ -188,7 +188,7 @@
         </el-form>
 
         <span slot="footer" class="dialog-footer">
-            <el-button type="primary" @click="layerSubmit()" v-text="layer.confirm_button||'确定'"></el-button>
+            <el-button type="primary" @click="layerSubmit()" v-text="layer.confirm_button||'确定'" disabled="buttonDisabled"></el-button>
             <el-button @click="visible = false" v-text="layer.cancel_button||'取消'"></el-button>
         </span>
     </el-dialog>
@@ -206,7 +206,8 @@
             params: [],
             layer: {},
             rules: [],
-            action: ''
+            action: '',
+            buttonDisabled: false
         },
         methods: {
             layerSubmit() {
@@ -241,7 +242,7 @@
                         data.append(item.key, item.value);
                     }
                 }
-
+                this.buttonDisabled = true; // 点击后将按钮禁用
                 axios.post('{% get_model_ajax_url %}'+window.location.search, data).then(res => {
                     if (res.data.status === 'redirect') {
                         self.visible = false;
@@ -257,6 +258,7 @@
                         message: res.data.msg,
                         type: res.data.status
                     });
+                    this.buttonDisabled = false;
                 }).catch(err => self.$message.error(err));
             }
         }
