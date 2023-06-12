@@ -1,10 +1,7 @@
-**django-simpleui**
+**simpleui-admin**
 
 github:
 
-https://github.com/newpanjing/simpleui
+https://github.com/RelaxedDong/simpleui
 
-gitee:
-
-https://gitee.com/tompeppa/simpleui
 

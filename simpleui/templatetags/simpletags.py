@@ -197,6 +197,7 @@ def menus(context, _get_config=None):
     if not _get_config:
         _get_config = get_config
 
+    user_permissions = context.request.user.get_all_permissions()
     config = _get_config('SIMPLEUI_CONFIG')
     if not config:
         config = {}
@@ -237,7 +238,11 @@ def menus(context, _get_config=None):
         if config.get(key, None):
             temp = config.get('menus')
             for i in temp:
+                _models = []
                 # 处理面包屑
+                if i.get('permission') and i['permission'] not in user_permissions:
+                    continue
+
                 if 'models' in i:
                     for k in i.get('models'):
                         k['breadcrumbs'] = [{
@@ -247,11 +252,16 @@ def menus(context, _get_config=None):
                             'name': k.get('name'),
                             'icon': k.get('icon')
                         }]
+                        if k.get('permission') and k['permission'] not in user_permissions:
+                            continue
+                        else:
+                            _models.append(k)
                 else:
                     i['breadcrumbs'] = [{
                         'name': i.get('name'),
                         'icon': i.get('icon')
                     }]
+                i['models'] = _models
                 data.append(i)
         else:
             data = config.get('menus')
