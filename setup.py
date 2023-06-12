@@ -3,6 +3,8 @@ import sys
 
 from setuptools import setup
 
+import simpleui
+
 if sys.version_info < (3, 0):
     long_description = "\n".join([
         open('README.rst', 'r').read(),
@@ -13,12 +15,10 @@ else:
     ])
 
 
-VERSION = '2023.06.12'
-
 
 setup(
     name='simpleui-admin',
-    version=VERSION,
+    version=simpleui.get_version(),
     packages=['simpleui'],
     zip_safe=False,
     include_package_data=True,
