@@ -141,7 +141,7 @@ def home_page(context):
 
     context['title'] = title
     context['icon'] = icon
-
+    context['show_bread_crumbs'] = bool(__get_config('SIMPLEUI_NO_BREADCRUMBS'))
     return ''
 
 

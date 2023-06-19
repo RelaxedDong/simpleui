@@ -24,3 +24,4 @@ pip install simpleui-admin
     'permission': 'auth.xxxxxx'
 }
 ```
+- 增加是否展示面包屑控制, settings.SIMPLEUI_NO_BREADCRUMBS

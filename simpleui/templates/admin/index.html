@@ -49,9 +49,9 @@
 {% endverbatim dynamicCss %}
 
 {% block menus %}
-    {% autoescape off %}
-        {% menus %}
-    {% endautoescape %}
+{% autoescape off %}
+{% menus %}
+{% endautoescape %}
 {% endblock %}
 <div id="main" @click="mainClick($event)" v-block>
     {% block theme_css %}
@@ -116,14 +116,14 @@
                 </div>
             {% endblock %}
 
-        <!-- menu -->
-        <transition name="el-zoom-in-center">
-        <multiple-menu
-                :menus="menus"
-                :menu-active="menuActive"
-                :fold="fold"
-        ></multiple-menu>
-        </transition>
+            <!-- menu -->
+            <transition name="el-zoom-in-center">
+                <multiple-menu
+                        :menus="menus"
+                        :menu-active="menuActive"
+                        :fold="fold"
+                ></multiple-menu>
+            </transition>
 
         </el-aside>
 
@@ -333,6 +333,15 @@
             console.log("或者加入QQ群:786576510 (Join QQ Group.)")
 
         }
+        {% if show_bread_crumbs %}
+            document.addEventListener('DOMContentLoaded', function () {
+                var elements = document.querySelectorAll('.el-tabs__header'); // 不想展示面包屑
+                for (var i = 0; i < elements.length; i++) {
+                    var element = elements[i];
+                    element.parentNode.removeChild(element);
+                }
+            });
+        {% endif %}
     </script>
 
     {% include 'admin/includes/js-part.html' %}
